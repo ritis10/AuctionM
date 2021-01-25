@@ -103,17 +103,25 @@
           $filter=$_POST['filter'];
 
         if($filter=="ALL" || !isset($_POST['filter']))
-          $query="SELECT * FROM orders where SellerUsr='$name';";
+				  $query="SELECT * FROM orders inner Join users on WhoDoes=id
+																		   inner Join product on productId=auctionId
+																		   WHERE SellerUsr='$name';";
 
         else if($filter=="MY")
-          $query="SELECT * FROM product where SellerUsr='$name';";
+          $query="SELECT * FROM product where owner='$name';";
 
       else if($filter=="Sat"){
-        $query="SELECT * FROM orders WHERE SellerUsr='$name' and status=1;";
+        $query="SELECT * FROM orders inner Join users on WhoDoes=id
+																		 inner Join product on productId=auctionId
+																		 WHERE SellerUsr='$name'
+																		 and status_del=1;";
       }
 
       else if($filter=="UnSat")
-        $query="SELECT * FROM orders WHERE SellerUsr='$name' and status=0;";
+			$query="SELECT * FROM orders inner Join users on WhoDoes=id
+																	 inner Join product on productId=auctionId
+																	 WHERE SellerUsr='$name'
+																	 and status_del=0;";
 
         mysqli_query($db,$query) or die("Query Failed");
         $result=mysqli_query($db,$query);

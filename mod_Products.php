@@ -106,7 +106,6 @@
 					<th>type</th>
 					<th>last_extension</th>
 					<th>finished</th>
-
         </tr>
         <?php
         $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type;";

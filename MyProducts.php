@@ -46,7 +46,7 @@
     	width: 100%;
 	  }
 
-	li{	
+	li{
     	float: left;
 	}
 
@@ -79,29 +79,38 @@
  			<form name='myproducts' method="POST" action="DeleteProduct.php" >
         <table>
         <tr>
-          <th>Product Id</th>
+					<th>Auction Id</th>
           <th>Product Name</th>
           <th>Minimum Bid</th>
-          <th>Maximum Bid</th>
-          <th>Current Bid</th>
-          <th>Stock</th>
-          <th>Description</th>
-          <th>Time Left</th>
-         
+          <th>owner of auction</th>
+          <th>description</th>
+          <th>current Bid</th>
+          <th>price_step</th>
+					<th>time left</th>
+					<th></th>
+          <th>extensions</th>
+          <th>numberofextensions</th>
+          <th>Time of Extensions</th>
+					<th>crucial_time</th>
+					<th>type</th>
+					<th>last_extension</th>
+					<th>finished</th>
         </tr>
         <?php
-        $query="SELECT * FROM product where sellerUsr='$name';";
+        $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
+																			inner JOIN users on id=owner
+																			where owner='$name';";
         mysqli_query($db,$query);
         $result=mysqli_query($db,$query);
         while($row=mysqli_fetch_array($result)){
           echo '<tr>';
-          echo '<td>'.$row['productId'].'</td>';
+          echo '<td>'.$row['auctionId'].'</td>';
           echo '<td>'.$row['productName'].'</td>';
           echo '<td>'.$row['minbid'].'</td>';
-          echo '<td>'.$row['maxbid'].'</td>';
+          echo '<td>'.$row['owner'].'</td>';
+					echo '<td>'.$row['descp'].'</td>';
           echo '<td>'.$row['currBid'].'</td>';
-          echo '<td>'.$row['quantity'].'</td>';
-          echo '<td>'.$row['descp'].'</td>';
+          echo '<td>'.$row['price_step'].'</td>';
           $d1=date_create($row['expiry']);
           $d2=date_create(date('d-m-Y'));
 
@@ -109,12 +118,26 @@
 
           if($diff->format("%R%a")<0){
             echo '<td>Expired<td>';
-            $row['productId']=-1;
+            $row['auctionId']=-1;
           }
           else if($diff->format("%R%a")==0)
             echo '<td>Last Day<td>';
           else
             echo '<td>'.$diff->format("%a").' days left<td>';
+					//echo '<td>'.$row['extensions'].'</td>';
+					if ($row['extensions']==0)
+						echo '<td> Δεν δώθηκαν παρατάσεις </td>';
+					else
+						echo '<td> Υπάρχουν παρατάσεις </td>';
+					echo '<td>'.$row['Num_of_Extensions'].'</td>';
+	        echo '<td>'.$row['Time_of_Extensions'].'</td>';
+	        echo '<td>'.$row['crucial_time'].'</td>';
+	        echo '<td>'.$row['a_type_descr'].'</td>';
+					echo '<td>'.$row['last_extension'].'</td>';
+					if ($row['finished']==0)
+						echo '<td> Δεν ολοκληρώθηκε </td>';
+					else
+						echo '<td> Ολοκληρώθηκε </td>';
 
           echo "<td> <button type='submit' name='Delete' value=".$row['productId'].">Delete</button></td>";
           echo '</tr>';
