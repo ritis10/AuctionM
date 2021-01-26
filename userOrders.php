@@ -80,16 +80,18 @@
           <th>Κωδικός Παραγγελίας</th>
           <th>Προϊόν</th>
           <th>Πωλητής</th>
-          <th>Τωρινή Προσφορά</th>
+          <th>Η Προσφορά μου</th>
+					<th>Τωρινή Τιμή Δημοπρασίας</th>
 					<th>Πελάτης</th>
 					<th>Χρόνος παραγγελίας</th>
           <th>Διεύθυνση Πελάτη</th>
-          <th>Κατάσταση Παραγγελίας</th>
+          <th>Κατάσταση Δημοπρασίας</th>
         </tr>
         <?php
         $query="SELECT * FROM orders inner Join users on WhoDoes=id
-																		inner Join product on productId=auctionId
-																	  where username='$name';";
+																		 inner Join product on productId=auctionId
+																		 inner Join fin_del_product on prod_status_id=finished
+																	   where username='$name';";
         mysqli_query($db,$query) or die("Query Failed");
         $result=mysqli_query($db,$query);
         while($row=mysqli_fetch_array($result)){
@@ -98,20 +100,21 @@
           echo '<td>'.$row['productName'].'</td>';
           echo '<td>'.$row['SellerUsr'].'</td>';
           echo '<td>'.$row['Amount'].'</td>';
+					if($row['currBid']==0)
+          	echo '<td>'.$row['minbid'].'€</td>';
+          else
+          	echo '<td>'.$row['currBid'].'€</td>';
 					echo '<td>'.$row['first_name'].' '.$row['last_name'].'</td>';
 					echo '<td>'.$row['when_'].'</td>';
 					echo '<td>'.$row['Address'].'</td>';
-          if ($row['status_del']==0)
-            echo '<td> Δεν επιβεβαιώθηκε από πωλητή </td>';
-          else
-            echo '<td> Επιβεβαιώθηκε απο πωλητή </td>';
+          echo '<td>'.$row['prod_status'].'</td>';
           echo '</tr>';
         }
         echo '</table>';
         mysqli_close($db);
-        echo "<form action='Listings.php'><button action='Listings.php'>Go Back</button></form>";
+        echo "<form action='Listings.php'><button action='Listings.php'>Πάτησε εδώ για καλύτερη προσφορά</button></form>";
         ?>
       </form>
-	</fieldset>		
+	</fieldset>
  </body>
 </html>

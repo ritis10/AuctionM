@@ -99,9 +99,8 @@ if($Err==0){
 		$whodoes = mysqli_query($db,$whodoes) or die("query failed");
 		$whodoes = mysqli_fetch_array($whodoes);
 		$whodoesit = $whodoes['whodoes'];
-
+    $seller=$_SESSION['seller'];
 		$address=$_POST['addr'];
-
 		$myDate = date("Y-m-d H:i:s", strtotime('+1 hour'));
 
 			$max="SELECT MAX(OrderId) as \"lastId\" from orders ";
@@ -110,7 +109,7 @@ if($Err==0){
 			$max=$max['lastId']+1;
 			$auction = $_SESSION['auction'];
 
-			$query="INSERT into orders VALUES('$max' , '$whodoesit' , '' , '$Bid' , '$address' , '$auction' , '0', '$myDate');";
+			$query="INSERT into orders VALUES('$max' , '$whodoesit' , '$seller' , '$Bid' , '$address' , '$auction' , '0', '$myDate','1');";
 			$result=mysqli_query($db,$query) or die("could not add");
 
 			$expires="SELECT expiry as \"ex\" from product WHERE auctionId='$auction'";
@@ -167,13 +166,13 @@ if($Err==0){
 	if ($idee==6){
 		$PID=$_SESSION["Product_to_finalize"];
 		$Stat=$_SESSION["Sale_status"];
-		$OID=$_SESSION["Order_to_finalize"];
+		//$OID=$_SESSION["Order_to_finalize"];
 		if ($Stat==1){
-			echo "Order Already Completed<br>";
-			echo "<title> Please Try Again !</title>";
+			echo "H δημοπρασία έχει ήδη οριστικοποιηθεί<br>";
+			echo "<title> Προσπάθησε ξανά!</title>";
 		}
 		else {
-			$query="SELECT amount,quantity from orders where OrderId=$OID";
+			$query="SELECT amount,quantity from orders where auctionId=$OID";
 			$result=mysqli_query($db,$query) or die('No fetch Data');
 			while($row=mysqli_fetch_array($result)){
 				$qty=$row['quantity'];
@@ -324,9 +323,9 @@ if($Err==0){
 	}
 	if($idee==13){
 		$PID=$_SESSION['Auction_to_delete'];
-		$query="DELETE from orders where productId=$PID;";
+		$query="UPDATE product set finished=2 where auctionId=$PID;";
 		$result2=mysqli_query($db,$query) or die("Delete Failed");
-		$query="DELETE from product where auctionId=$PID;";
+		$query="UPDATE order set status_del=1 where productId=$PID;";
 		$result=mysqli_query($db,$query) or die("Delete Failed");
 		if($result && $result2){
 			echo "<title> H Δημοπρασία ακυρώθηκε!</title>";

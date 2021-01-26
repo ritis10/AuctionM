@@ -69,23 +69,24 @@
   </head>
  	<body>
  		<ul>
-  			<li><a  href="Seller_portal.php">Add Product</a></li>
-  			<li><a class="active" href="Seller_orders.php">My Orders</a></li>
-       	<li><a href="MyProducts.php">My Products</a></li>
-        <li><a href="index.php">Logout</a><li>
+			<li><a href="Seller_portal.php">Πρόσθεσε προίόν</a></li>
+			<li><a class="active" href="Seller_orders.php">Οι παραγγελίες για τα προϊόντα μου</a></li>
+			<li><a href="productstofin.php">Οριστικοποίηση πλειστηριασμού</a></li>
+			<li><a href="MyProducts.php">Διαγραφή πλειστηριασμού</a></li>
+			<li><a href="index.php">Αποσύνδεση</a><li>
 		</ul>
         <fieldset>
         <form method="post" action="Seller_orders.php">
         <select name='filter'>
-         <option  value="ALL">All Orders</option>
-         <option  value="Sat">Satisfied</option>
-         <option  value="UnSat">Unsatisfied</option>
+         <option  value="ALL">όλες οι παραγγελίες</option>
+         <option  value="Sat">Σε ισχύ</option>
+         <option  value="UnSat">Ακυρώθηκαν</option>
         </select>
         <input type="Submit" value='filter'>
         </form>
        </fieldset>
       <fieldset>
- 			<form name='myorders' method="POST" action="Finalize.php" >
+ 			<form name='myorders' method="POST" action="" >
         <table>
         <tr>
 					<th>Κωδικός Παραγγελίας</th>
@@ -134,11 +135,11 @@
 					echo '<td>'.$row['first_name'].' '.$row['last_name'].'</td>';
 					echo '<td>'.$row['when_'].'</td>';
 					echo '<td>'.$row['Address'].'</td>';
-          if ($row['status_del']==0)
-            echo '<td> Not Sold </td>';
+          if ($row['status_del']==1)
+            echo '<td> Σε ισχύ </td>';
           else
-            echo '<td> Sold </td>';
-          echo "<td> <button type='submit' name='Final' value=".$row['OrderId'].">Finalize</button></td>";
+            echo '<td> Ακυρώθηκε </td>';
+          //echo "<td> <button type='submit' name='Final' value=".$row['OrderId'].">Finalize</button></td>";
           echo '</tr>';
         }
         echo '</table>';

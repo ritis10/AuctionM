@@ -125,10 +125,11 @@
   </head>
  	<body>
  		<ul>
-  			<li><a class="active" href="Seller_portal.php">Add Product</a></li>
-  			<li><a href="Seller_orders.php">My Orders</a></li>
-  			<li><a href="MyProducts.php">My Products</a></li>
-        <li><a href="index.php">Logout</a><li>
+  			<li><a class="active" href="Seller_portal.php">Πρόσθεσε προίόν</a></li>
+  			<li><a href="Seller_orders.php">Οι παραγγελίες για τα προϊόντα μου</a></li>
+				<li><a href="productstofin.php">Οριστικοποίηση πλειστηριασμού</a></li>
+  			<li><a href="MyProducts.php">Διαγραφή πλειστηριασμού</a></li>
+        <li><a href="index.php">Αποσύνδεση</a><li>
 		</ul>
 
  			<form name='add_product' method="POST" action="landing_page.php" >

@@ -1,10 +1,10 @@
 <?php
 	session_start();
-  if($_SESSION["logged"]!="buyer")
+    if($_SESSION["logged"]!="seller")
     header("location: index.php");
 	$name=$_SESSION['Name'];
 	echo "<title> Welcome $name </title>";
-	$db=mysqli_connect('localhost','root','','auction') or die("connection failed");
+  $db=mysqli_connect('localhost','root','','auction');
 ?>
 <html>
   <head>
@@ -14,9 +14,9 @@
         margin:4px;
       }
       body{
-      	margin:70px;
+      	margin: 70px;
         font-family:sans-serif;
-        background-color: lightgreen;
+        background-color: powderblue;
       }
       table{
         border-collapse: collapse;
@@ -67,16 +67,30 @@
  }
   	</style>
   </head>
-  <body>
-  	 	<ul>
-  			<li><a class="active" href="Listings.php">Search Products</a></li>
-  			<li><a href="userOrders.php">My Orders</a></li>
-        <li><a href="index.php">Logout</a><li>
+ 	<body>
+ 		<ul>
+			<li><a href="Seller_portal.php">Πρόσθεσε προίόν</a></li>
+			<li><a href="Seller_orders.php">Οι παραγγελίες για τα προϊόντα μου</a></li>
+			<li><a class="active" href="productstofin.php">Οριστικοποίηση πλειστηριασμού</a></li>
+			<li><a href="MyProducts.php">Διαγραφή πλειστηριασμού</a></li>
+			<li><a href="index.php">Αποσύνδεση</a><li>
 		</ul>
-  	<form method="POST" action="newOrder.php">
-      <table>
+        <fieldset>
+        <form method="post" action="productstofin.php">
+        <select name='filter'>
+         <option  value="ALL">Όλες οι δημοπρασίες</option>
+         <option  value="Sat">Ολοκληρωμένες</option>
+         <option  value="UnSat">Σε ισχύ</option>
+				 <option  value="Del">Διεγραμμένες</option>
+        </select>
+        <input type="Submit" value='filter'>
+        </form>
+       </fieldset>
+      <fieldset>
+ 			<form name='myorders' method="POST" action="Finalize.php" >
+        <table>
         <tr>
-          <th>Όνομα Προϊόντος ή Υπηρεσίας</th>
+					<th>Όνομα Προϊόντος ή Υπηρεσίας</th>
           <th>Τιμή Εκκίνησης</th>
           <th>Τωρινή Τιμή Δημοπρασίας</th>
 					<th>Τιμή Επόμενου Χτυπήματος</th>
@@ -89,28 +103,56 @@
           <th>Χρόνος μιας επέκτασης</th>
 		  		<th>crucial time</th>
 					<th>Κατάσταση Δημοπρασίας</th>
-					</tr>
-
-
+        </tr>
         <?php
-				$query="SELECT * FROM product inner Join auction_types on a_type_id=type
-																			inner Join users on owner=id
-																			inner Join fin_del_product on prod_status_id=finished;";
-        mysqli_query($db,$query);
-        $result=mysqli_query($db,$query);
+        $filter="";
+        if(isset($_POST['filter']))
+          $filter=$_POST['filter'];
 
+        if($filter=="ALL" || !isset($_POST['filter']))
+				  $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
+																				inner JOIN users on id=owner
+																				inner Join fin_del_product on prod_status_id=finished
+																				where username='$name';";
+
+        else if($filter=="MY")
+          $query="SELECT * FROM product where owner='$name';";
+
+      else if($filter=="Sat"){
+        $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
+																			inner JOIN users on id=owner
+																			inner Join fin_del_product on prod_status_id=finished
+																			where username='$name'
+																		  and finished=1;";
+      }
+
+      else if($filter=="UnSat")
+			$query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
+																		inner JOIN users on id=owner
+																		inner Join fin_del_product on prod_status_id=finished
+																		where username='$name'
+																	  and finished=0;";
+			else if($filter=="Del")
+			  $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
+																			inner JOIN users on id=owner
+																			inner Join fin_del_product on prod_status_id=finished
+																			where username='$name'
+											 						    and finished=2;";
+
+        mysqli_query($db,$query) or die("Query Failed");
+        $result=mysqli_query($db,$query);
         while($row=mysqli_fetch_array($result)){
-          echo '<tr>';
-          echo '<td>'.$row['productName'].'</td>';
-          echo '<td>'.$row['minbid'].'€</td>';
-          if($row['currBid']==0)
-          	echo '<td>'.$row['minbid'].'€</td>';
-          else
-          	echo '<td>'.$row['currBid'].'€</td>';
+					echo '<tr>';
+					echo '<td>'.$row['productName'].'</td>';
+					echo '<td>'.$row['minbid'].'€</td>';
+					if($row['currBid']==0)
+						echo '<td>'.$row['minbid'].'€</td>';
+					else
+						echo '<td>'.$row['currBid'].'€</td>';
 					echo '<td>'.$row['price_step'].'€</td>';
-          echo '<td>'.$row['descp'].'</td>';
+					echo '<td>'.$row['descp'].'</td>';
 					echo '<td>'.$row['a_type_descr'].'</td>';
-          echo '<td>'.$row['first_name']. ' ' .$row['last_name'].'</td>';
+					echo '<td>'.$row['first_name']. ' ' .$row['last_name'].'</td>';
 					if($row['extensions']==1)
 						echo '<td>NAI</td>';
 					else
@@ -194,33 +236,18 @@
 							echo '<td>Last Minute</td>';
 						}
 
-		  			echo '<td>'.$row['Num_of_Extensions'].'</td>';
+						echo '<td>'.$row['Num_of_Extensions'].'</td>';
 
-		  			echo '<td>'.$row['Time_of_Extensions'].'</td>';
+						echo '<td>'.$row['Time_of_Extensions'].'</td>';
 
-		  			echo '<td>'.$row['crucial_time'].'</td>';
+						echo '<td>'.$row['crucial_time'].'</td>';
 						echo '<td>'.$row['prod_status'].'</td>';
-
-							if($diff->format("%R%a")<0 || ($d1<$d2))
-							{
-
-								echo "<td> <button type='submit' name='NewBid' value=".$row['auctionId']." disabled>Bid</button></td>";
-							}
-							else {
-								{
-									echo "<td> <button type='submit' name='NewBid' value=".$row['auctionId']." >Bid</button></td>";
-									$auction = $row['auctionId'];
-									$_SESSION['auction'] = $auction;
-									$seller=$row['username'];
-									$_SESSION['seller']=$seller;
-								}
-							}
-
-          echo '</tr>';
-        }
+          echo "<td> <button type='submit' name='Final' value=".$row['auctionId'].">Finalize</button></td>";
+          echo '</tr>';}
         echo '</table>';
         mysqli_close($db);
         ?>
       </form>
- </body>
+    </fieldset>
+  	</body>
 </html>

@@ -77,7 +77,7 @@
 			<li><a href="index.php">Logout</a><li>
 		</ul>
         <fieldset>
-        <form method="post" action="Seller_orders.php">
+        <form method="post" action="svp_Seller_orders.php">
         <select name='filter'>
          <option  value="ALL">All Orders</option>
          <option  value="Sat">Satisfied</option>
@@ -90,15 +90,14 @@
  			<form name='myorders' method="POST" action="Finalize.php" >
         <table>
         <tr>
-          <th>OrderId</th>
+					<th>Κωδικός Παραγγελίας</th>
 					<th>Προϊόν</th>
-          <th>Όνομα Αγοραστή</th>
-          <th>Όνομα Πωλητή</th>
-          <th>Ποσό τωρινής προσφοράς</th>
-
-          <th>Δθνση Αγοραστή</th>
-          <th>Address</th>
-          <th>Status</th>
+					<th>Πωλητής</th>
+					<th>Τωρινή Προσφορά</th>
+					<th>Πελάτης</th>
+					<th>Χρόνος παραγγελίας</th>
+					<th>Διεύθυνση Πελάτη</th>
+					<th>Στάδιο Δημοπρασίας</th>
         </tr>
         <?php
         $filter="";
@@ -106,32 +105,38 @@
           $filter=$_POST['filter'];
 
         if($filter=="ALL" || !isset($_POST['filter']))
-          $query="SELECT * FROM orders where SellerUsr='$name';";
+				$query="SELECT * FROM orders inner Join users on WhoDoes=id
+																		 inner Join product on productId=auctionId
+																		 inner Join fin_del_product on prod_status_id=finished;";
 
         else if($filter=="MY")
-          $query="SELECT * FROM product where SellerUsr='$name';";
+         $query="SELECT * FROM product;";
 
       else if($filter=="Sat"){
-        $query="SELECT * FROM orders WHERE SellerUsr='$name' and status=1;";
+				$query="SELECT * FROM orders inner Join users on WhoDoes=id
+																		 inner Join product on productId=auctionId
+																		 inner Join fin_del_product on prod_status_id=finished
+																		 and status_del=1;";
       }
 
       else if($filter=="UnSat")
-        $query="SELECT * FROM orders WHERE SellerUsr='$name' and status=0;";
+			$query="SELECT * FROM orders inner Join users on WhoDoes=id
+																	 inner Join product on productId=auctionId
+																	 inner Join fin_del_product on prod_status_id=finished
+																	 and status_del=0;";
 
         mysqli_query($db,$query) or die("Query Failed");
         $result=mysqli_query($db,$query);
         while($row=mysqli_fetch_array($result)){
-          echo '<tr>';
-          echo '<td>'.$row['OrderId'].'</td>';
-          echo '<td>'.$row['auctionId'].'</td>';
-          echo '<td>'.$row['BuyerUsr'].'</td>';
-          echo '<td>'.$row['Amount'].'</td>';
-          echo '<td>'.$row['Quantity'].'</td>';
-          echo '<td>'.$row['Address'].'</td>';
-          if ($row['status']==0)
-            echo '<td> Not Sold </td>';
-          else
-            echo '<td> Sold </td>';
+					echo '<tr>';
+					echo '<td>'.$row['OrderId'].'</td>';
+					echo '<td>'.$row['productName'].'</td>';
+					echo '<td>'.$row['SellerUsr'].'</td>';
+					echo '<td>'.$row['Amount'].'</td>';
+					echo '<td>'.$row['first_name'].' '.$row['last_name'].'</td>';
+					echo '<td>'.$row['when_'].'</td>';
+					echo '<td>'.$row['Address'].'</td>';
+					echo '<td>'.$row['prod_status'].'</td>';
           echo "<td> <button type='submit' name='Final' value=".$row['OrderId'].">Finalize</button></td>";
           echo '</tr>';
         }
