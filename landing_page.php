@@ -152,9 +152,9 @@ if($Err==0){
 
 	if($idee==5){
 		$PID=$_SESSION['Product_to_delete'];
-		$query="DELETE from product where productId=$PID;";
+		$query="UPDATE product set finished=3 where auctionId=$PID;";
 		$result=mysqli_query($db,$query) or die("Delete Failed");
-		$query="DELETE from orders where productId=$PID;";
+		$query="UPDATE orders set status_del=0 where productId=$PID;";
 		$result2=mysqli_query($db,$query) or die("Delete Failed");
 		if($result && $result2){
 			echo "<title> Deleted Product !</title>";
@@ -166,27 +166,27 @@ if($Err==0){
 	if ($idee==6){
 		$PID=$_SESSION["Product_to_finalize"];
 		$Stat=$_SESSION["Sale_status"];
-		//$OID=$_SESSION["Order_to_finalize"];
+	//$OID=$_SESSION["Order_to_finalize"];
 		if ($Stat==1){
 			echo "H δημοπρασία έχει ήδη οριστικοποιηθεί<br>";
 			echo "<title> Προσπάθησε ξανά!</title>";
 		}
 		else {
-			$query="SELECT amount,quantity from orders where auctionId=$OID";
+			$query="SELECT productName, currbid  from product where auctionId=$PID";
 			$result=mysqli_query($db,$query) or die('No fetch Data');
 			while($row=mysqli_fetch_array($result)){
-				$qty=$row['quantity'];
-				$amt=$row['amount'];
+				$pN=$row['productName'];
+				$crb=$row['currBid'];
 			}
 
-			$query="UPDATE orders set status_del=1 where OrderId=$OID";
+			$query="UPDATE orders set status_del=1 where productId=$PID";
 			$result=mysqli_query($db,$query) or die('Could not sell');
 
-			$query="UPDATE product set minbid=maxbid, maxbid=maxbid+$amt, currBid=0 where productId=$PID;";
+			$query="UPDATE product set finished=2 where auctionId=$PID;";
 			$result2=mysqli_query($db,$query) or die('Could not Update');
 			if($result2 && $result){
 				echo "<title> Success !</title>";
-				echo "Successfully Sold and Updated";
+				echo "Successfully Finalized";
 			}
 			}
 				echo "<form action='Seller_orders.php'><button action='Seller_orders.php'>Go Back</button></form>";
@@ -204,7 +204,7 @@ if($Err==0){
 			echo "Η επαναφορά από οριστική απενεργοποίηση γίνεται μόνο από τον PROVIDER!!!";
 		}
 		else {
-			$query="UPDATE users set status='3' where id=$OID";
+			$query="UPDATE users set status=3 where id=$OID";
 			$result=mysqli_query($db,$query) or die('Could not change');
 			$query1="UPDATE users set approval_date=curdate() where id=$OID";
 			$result1=mysqli_query($db,$query1) or die('λαθος ημερομηνία');

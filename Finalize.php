@@ -99,7 +99,7 @@
         $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
 																			inner JOIN users on id=owner
 																			inner Join fin_del_product on prod_status_id=finished
-																			where username='$name';";
+																			where username='$name'and auctionId=$oid;";
         mysqli_query($db,$query);
         $result=mysqli_query($db,$query);
         while($row=mysqli_fetch_array($result)){
