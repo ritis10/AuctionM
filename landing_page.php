@@ -89,10 +89,10 @@ if($Err==0){
 		{
 			$Bid=$_POST['bid'];
 		}
-			else
-			{
+		else
+		{
 				$Bid = null;
-			}
+		}
 
 		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 		$whodoes = "SELECT id as whodoes from users where username='$name'";
@@ -141,54 +141,65 @@ if($Err==0){
 				echo "Η προσφορά σου έγινε";
 				echo "<form action='Listings.php'><button action='Listings.php'>Go Back</button></form>";
 			}
-		}
 	}
-
-		else{
+}
+		/*else{
 			echo "<title> Failed to Bid</title>";
 			echo "Failed to Bid . Try Again";
 			echo "<form action='Listings.php'><button action='Listings.php'>Go Back</button></form>";
-		}
+		}*/
 
 	if($idee==5){
 		$PID=$_SESSION['Product_to_delete'];
-		$query="UPDATE product set finished=3 where auctionId=$PID;";
-		$result=mysqli_query($db,$query) or die("Delete Failed");
-		$query="UPDATE orders set status_del=0 where productId=$PID;";
-		$result2=mysqli_query($db,$query) or die("Delete Failed");
+		$Fin=$_SESSION['finished'];
+		if ($Fin==3){
+			echo "H δημοπρασία έχει ήδη διαγραφεί<br>";
+			echo "<title> Προσπάθησε ξανά!</title>";
+		}
+		else {
+		$query1="UPDATE product set finished=3 where auctionId=$PID;";
+		$result=mysqli_query($db,$query1) or die("Delete Failed");
+		$query2="UPDATE orders set status_del=0 where productId=$PID;";
+		$result2=mysqli_query($db,$query2) or die("Delete Failed");
 		if($result && $result2){
 			echo "<title> Deleted Product !</title>";
 			echo "Deleted Successfully";
+			}
 		}
 			echo "<form action='Seller_portal.php'><button action='Seller_portal.php'>Go Back</button></form>";
 	}
 
 	if ($idee==6){
-		$PID=$_SESSION["Product_to_finalize"];
-		$Stat=$_SESSION["Sale_status"];
+		$PID=$_SESSION['Product_to_finalize'];
+		$St=$_SESSION['finished'];
+		$BID_ID=$_SESSION['bidid'];
+		$BID=$_SESSION['bid'];
 	//$OID=$_SESSION["Order_to_finalize"];
-		if ($Stat==1){
+		if ($St=='2'){
 			echo "H δημοπρασία έχει ήδη οριστικοποιηθεί<br>";
 			echo "<title> Προσπάθησε ξανά!</title>";
 		}
 		else {
-			$query="SELECT productName, currbid  from product where auctionId=$PID";
+			/*$query="SELECT productName, currbid  from product where auctionId=$PID";
 			$result=mysqli_query($db,$query) or die('No fetch Data');
 			while($row=mysqli_fetch_array($result)){
 				$pN=$row['productName'];
 				$crb=$row['currBid'];
-			}
+			}*/
 
-			$query="UPDATE orders set status_del=1 where productId=$PID";
-			$result=mysqli_query($db,$query) or die('Could not sell');
+			$query1="UPDATE orders set status_del=1 where productId=$PID";
+			$result=mysqli_query($db,$query1) or die('Could not sell');
 
-			$query="UPDATE product set finished=2 where auctionId=$PID;";
-			$result2=mysqli_query($db,$query) or die('Could not Update');
+			$query2="UPDATE product set finished=2 where auctionId=$PID;";
+			$result2=mysqli_query($db,$query2) or die('Could not Update');
 			if($result2 && $result){
 				echo "<title> Success !</title>";
 				echo "Successfully Finalized";
 			}
-			}
+
+			$query3="INSERT INTO knockdown (`bid_id`, `isdelivered`, `ispaidbybuyer`, `ispaidseller`, `providerfees`, `isfeespaid`) VALUES ('$BID_ID', '0', '0', '0', 0.05*$_BID, '0');"
+			$result3=mysqli_query($db,$query3) or die("Delete Failed");
+		}
 				echo "<form action='Seller_orders.php'><button action='Seller_orders.php'>Go Back</button></form>";
 
 	}

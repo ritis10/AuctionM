@@ -80,6 +80,7 @@
  			<form name='myproducts' method="POST" action="DeleteProduct.php" >
         <table>
         <tr>
+					<th>Κωδικός Πλειστηριασμού<th>
 					<th>Όνομα Προϊόντος ή Υπηρεσίας</th>
           <th>Τιμή Εκκίνησης</th>
           <th>Τωρινή Τιμή Δημοπρασίας</th>
@@ -197,12 +198,9 @@
 						}
 
 		  			echo '<td>'.$row['Num_of_Extensions'].'</td>';
-
 		  			echo '<td>'.$row['Time_of_Extensions'].'</td>';
-
 		  			echo '<td>'.$row['crucial_time'].'</td>';
 						echo '<td>'.$row['prod_status'].'</td>';
-
           echo "<td> <button type='submit' name='Delete' value=".$row['auctionId'].">Delete</button></td>";
           echo '</tr>';
         }

@@ -6,7 +6,7 @@
 	echo "<title> Complete Finalizing </title>";
 	$db=mysqli_connect('localhost','root','','auction') or die("connection failed");
   $oid=$_POST['Final'];
-  $_SESSION["Order_to_finalize"]=$oid;
+  $_SESSION["product_to_finalize"]=$oid;
 ?>
 <html>
   <head>
@@ -81,6 +81,7 @@
      <center> <h3> This cannot be undone </h3><center>
       <table>
         <tr>
+					<th>Κωδικός Πλειστηριασμού<th>
 					<th>Όνομα Προϊόντος ή Υπηρεσίας</th>
           <th>Τιμή Εκκίνησης</th>
           <th>Τωρινή Τιμή Δημοπρασίας</th>
@@ -90,6 +91,7 @@
           <th>Πωλητής</th>
           <th>Επιτρέπονται οι Παρατασεις</th>
 		  		<th>Ώρα που απομένει</th>
+					<th>AA τωρινής παραγγελίας</th>
 		  		<th>Αριθμός επιτρεπόμενων επεκτάσεων</th>
           <th>Χρόνος μιας επέκτασης</th>
 		  		<th>crucial time</th>
@@ -99,11 +101,13 @@
         $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
 																			inner JOIN users on id=owner
 																			inner Join fin_del_product on prod_status_id=finished
+																			inner Join orders on productId=auctionId
 																			where username='$name'and auctionId=$oid;";
         mysqli_query($db,$query);
         $result=mysqli_query($db,$query);
         while($row=mysqli_fetch_array($result)){
 					echo '<tr>';
+					echo'<td>'.$row['auctionId'].'</td>';
 					echo '<td>'.$row['productName'].'</td>';
 					echo '<td>'.$row['minbid'].'€</td>';
 					if($row['currBid']==0)
@@ -196,16 +200,17 @@
 						{
 							echo '<td>Last Minute</td>';
 						}
-
+						echo '<td>'.$row['OrderId'].'</td>';
 						echo '<td>'.$row['Num_of_Extensions'].'</td>';
-
 						echo '<td>'.$row['Time_of_Extensions'].'</td>';
-
 						echo '<td>'.$row['crucial_time'].'</td>';
 						echo '<td>'.$row['prod_status'].'</td>';
-          echo '</tr>';}
-          $_SESSION["Sale_status"]=$row['status'];
-          $_SESSION["Product_to_finalize"]=$row['auctionId'];
+            echo '</tr>';
+          $_SESSION['Product_to_finalize']=$row['auctionId'];
+					$_SESSION['finished']=$row['finished'];
+					$_SESSION['bidid']=$row['OrderId'];
+					$_SESSION['bid']=$row['currBid'];
+				}
         echo '</table>';
         mysqli_close($db);
         ?>

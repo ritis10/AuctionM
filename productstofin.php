@@ -99,6 +99,7 @@
           <th>Πωλητής</th>
           <th>Επιτρέπονται οι Παρατασεις</th>
 		  		<th>Ώρα που απομένει</th>
+					<th>AA τωρινής παραγγελίας</th>
 		  		<th>Αριθμός επιτρεπόμενων επεκτάσεων</th>
           <th>Χρόνος μιας επέκτασης</th>
 		  		<th>crucial time</th>
@@ -113,6 +114,7 @@
 				  $query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
 																				inner JOIN users on id=owner
 																				inner Join fin_del_product on prod_status_id=finished
+																				inner Join orders on productId=auctionId
 																				where username='$name';";
 
         else if($filter=="MY")
@@ -235,15 +237,15 @@
 						{
 							echo '<td>Last Minute</td>';
 						}
-
+						echo '<td>'.$row['OrderId'].'</td>';
 						echo '<td>'.$row['Num_of_Extensions'].'</td>';
-
 						echo '<td>'.$row['Time_of_Extensions'].'</td>';
-
 						echo '<td>'.$row['crucial_time'].'</td>';
 						echo '<td>'.$row['prod_status'].'</td>';
           echo "<td> <button type='submit' name='Final' value=".$row['auctionId'].">Finalize</button></td>";
-          echo '</tr>';}
+          echo '</tr>';
+					$_SESSION["product_to_finalize"]=$row['auctionId'];
+				}
         echo '</table>';
         mysqli_close($db);
         ?>

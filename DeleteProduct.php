@@ -69,44 +69,54 @@
   </head>
   <body>
   	<ul>
-        <li><a href="Seller_portal.php">Add Product</a></li>
-        <li><a href="Seller_orders.php">My Orders</a></li>
-        <li><a class="active" href="myproducts.php">My Products</a></li>
-        <li><a href="index.php">Logout</a><li>
+			<li><a href="Seller_portal.php">Πρόσθεσε προίόν</a></li>
+			<li><a href="Seller_orders.php">Οι παραγγελίες για τα προϊόντα μου</a></li>
+			<li><a href="productstofin.php">Οριστικοποίηση πλειστηριασμού</a></li>
+			<li><a class="active" href="MyProducts.php">Διαγραφή πλειστηριασμού</a></li>
+			<li><a href="index.php">Αποσύνδεση</a><li>
     </ul>
   	<form method="POST" action="landing_page.php">
      <center> <h3> Διαγραφή Προιόντος </h3><center>
       <table>
         <tr>
-          <th>Product Name</th>
-          <th>Minimum Bid</th>
-          <th>Maximum Bid</th>
-          <th>Current Bid</th>
-          <th>Description</th>
-          <th>Stock</th>
-          <th>Time Left</th>
+					<th>Κωδικός Πλειστηριασμού<th>
+					<th>Όνομα Προϊόντος ή Υπηρεσίας</th>
+          <th>Τιμή Εκκίνησης</th>
+          <th>Τωρινή Τιμή Δημοπρασίας</th>
+					<th>Τιμή Επόμενου Χτυπήματος</th>
+          <th>Λεπτομέρειες</th>
+          <th>Τύπος Δημοπρασίας</th>
+          <th>Πωλητής</th>
+          <th>Επιτρέπονται οι Παρατασεις</th>
+		  		<th>Ώρα που απομένει</th>
+		  		<th>Αριθμός επιτρεπόμενων επεκτάσεων</th>
+          <th>Χρόνος μιας επέκτασης</th>
+		  		<th>crucial time</th>
+					<th>Κατάσταση Δημοπρασίας</th>
 
         </tr>
         <?php
 				$query="SELECT * FROM product inner JOIN auction_types on a_type_id=type
 																		  inner JOIN users on id=owner
 																		  inner Join fin_del_product on prod_status_id=finished
+																			inner JOIN orders on auctionId=productId
 																		  where username='$name'
-																		  and productId=$pid;";
+																		  and auctionId=$pid;";
         //mysqli_query($db,$query);
         $result=mysqli_query($db,$query);
         while($row=mysqli_fetch_array($result)){
 					echo '<tr>';
-					echo '<td>'.$row['productName'].'</td>';
-					echo '<td>'.$row['minbid'].'€</td>';
-					if($row['currBid']==0)
-						echo '<td>'.$row['minbid'].'€</td>';
-					else
-						echo '<td>'.$row['currBid'].'€</td>';
+					echo'<td>'.$row['auctionId'].'</td>';
+          echo '<td>'.$row['productName'].'</td>';
+          echo '<td>'.$row['minbid'].'€</td>';
+          if($row['currBid']==0)
+          	echo '<td>'.$row['minbid'].'€</td>';
+          else
+          	echo '<td>'.$row['currBid'].'€</td>';
 					echo '<td>'.$row['price_step'].'€</td>';
-					echo '<td>'.$row['descp'].'</td>';
+          echo '<td>'.$row['descp'].'</td>';
 					echo '<td>'.$row['a_type_descr'].'</td>';
-					echo '<td>'.$row['first_name']. ' ' .$row['last_name'].'</td>';
+          echo '<td>'.$row['first_name']. ' ' .$row['last_name'].'</td>';
 					if($row['extensions']==1)
 						echo '<td>NAI</td>';
 					else
@@ -190,13 +200,16 @@
 							echo '<td>Last Minute</td>';
 						}
 
-						echo '<td>'.$row['Num_of_Extensions'].'</td>';
+		  			echo '<td>'.$row['Num_of_Extensions'].'</td>';
 
-						echo '<td>'.$row['Time_of_Extensions'].'</td>';
+		  			echo '<td>'.$row['Time_of_Extensions'].'</td>';
 
-						echo '<td>'.$row['crucial_time'].'</td>';
+		  			echo '<td>'.$row['crucial_time'].'</td>';
 						echo '<td>'.$row['prod_status'].'</td>';
-						echo '</tr>';}
+						echo '</tr>';
+						$_SESSION["Product_to_delete"]=$row['auctionId'];
+						$_SESSION['finished']=$row['finished'];
+					}
         echo '</table>';
         mysqli_close($db);
         ?>
